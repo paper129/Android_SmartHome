@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "271497398868",
+    "firebase_url": "https://androidea-20737.firebaseio.com",
+    "project_id": "androidea-20737",
+    "storage_bucket": "androidea-20737.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:271497398868:android:7807253184b14c44",
+        "android_client_info": {
+          "package_name": "com.example.user.smarthome"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "271497398868-gn51h4o9o0dc0rckq7cp1bfe5g06of9a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrqqsbxI1iTQ07igDvui7MLTpT0Bbd3WE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
