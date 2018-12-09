@@ -34,7 +34,6 @@
 
         <service android:name="org.eclipse.paho.android.service.MqttService"></service>
 
-        <activity android:name=".login"></activity>
     </application>
 
 </manifest>

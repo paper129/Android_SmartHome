@@ -30,9 +30,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
+
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -42,22 +40,22 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
-    int i = 0;
-    int o = 0;
-    int u = 0;
-    int y = 0;
-    String message = "1";
-    private Button btn2;
-    private Button btn3;
-    private Button btn4;
-    private Button btn1;
+    String message1 = "1" ,message2="";
+    int y,u,p,o;
+    private int bn[] = { R.id.btn2 , R.id.btn3 ,R.id.btn4,R.id.btn1 };
+    private  Button btn_array[] = new Button[4];
+    private  int image1[] ={R.drawable.elec,R.drawable.fan,R.drawable.curtain,R.drawable.lock1};
+    private  int image2[] ={R.drawable.elec2,R.drawable.fan2,R.drawable.curtain2,R.drawable.unlock1};
+    private String object1[] = new String[6];
     TextView txtResult;
+    String label="";
     private Runnable mMyRunnable = new Runnable()
     {
         @Override
@@ -68,8 +66,6 @@ public class MainActivity extends AppCompatActivity {
     };
     private RequestQueue mQueue;
     public String TAG="MyTAG";
-    private String userName = "";
-    private String passWord = "";
     String clientId="";
     private int mq = 1;
     static String HOST = "tcp://mqtt.racinglog.pw:1883";
@@ -78,8 +74,7 @@ public class MainActivity extends AppCompatActivity {
     String hi = "1";
     Vibrator vibrator;
     Ringtone Rt;
-    private FirebaseAuth firebaseAuth ;
-    private FirebaseUser user;
+
     //private static final String TAG = MainActivity.class.getSimpleName();
     private static final String TEST_NOTIFY_ID = "test_notyfy_id";
     private static final int NOTYFI_REQUEST_ID = 300;
@@ -94,66 +89,116 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        firebaseAuth = FirebaseAuth.getInstance();
-        user = firebaseAuth.getCurrentUser();
-        if(user != null) {
+
             String ranID = UUID.randomUUID().toString();
             clientId = "Android-" + ranID;
-            btn1 = (Button)findViewById(R.id.btn1);
-            btn3 = (Button)findViewById(R.id.btn3);
-            btn2 = (Button)findViewById(R.id.btn2);
-            btn4 = (Button)findViewById(R.id.btn4);
+            for (int i=0; i<4 ;i++)
+            {
+                btn_array[i] = (Button)findViewById(bn[i]);
+            }
+
             Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
             Rt = RingtoneManager.getRingtone(getApplicationContext(), uri);
             mQueue = Volley.newRequestQueue(this);
             txtResult = (TextView) findViewById(R.id.txtResult);
             vibrator = (Vibrator)getSystemService(VIBRATOR_SERVICE);
             Log.d(clientId, "clientID");
-            String url = "https://api.thingspeak.com/channels/620045/feeds/last.json?results";
-            StringRequest strReq = new StringRequest(Request.Method.GET,
-                    url, new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    // Log.d(TAG, response.toString());
-                    try {
-                        // Parsing the string response into json object
-                        JSONObject jObj = new JSONObject(response);
-                        String light = jObj.getString("field1");
-                        String fan = jObj.getString("field2");
-                        String curtain = jObj.getString("field3");
-                        String tem = jObj.getString("field4");
-                        String hum = jObj.getString("field5");
-                        String jsonResponse = "";
-                        jsonResponse += "Temperature: " + tem + " °C\n";
-                        jsonResponse += "Humidity: " + hum + " %";
-                        if(light == hi){
-                            i = 1;
-                            btn2.setBackground(getResources().getDrawable(R.drawable.elec2));
+            final String field[] ={"1","2","3","4","5","6"};
+
+
+                String url = "http://mqtt.racinglog.pw/merge.json";
+
+                StringRequest strReq = new StringRequest(Request.Method.GET,
+                        url, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Log.d(TAG, response.toString());
+                        try {
+                            // Parsing the string response into json object
+                            JSONObject jObj = new JSONObject(response);
+                            JSONArray array1 = jObj.getJSONArray("merge");
+                            for(int i=0;i<array1.length();i++)
+                            {
+                                JSONObject oj = array1.getJSONObject(i);
+                                object1[i] = oj.getString("field"+field[i]);
+                                Log.d("System Info",object1[i]);
+                            }
+                            for (int i=0; i<=2; i++)
+                            {
+
+
+                                if(object1[i].equals("1"))
+                                {
+                                    btn_array[i].setBackgroundResource(image2[i]);
+                                    if(i == 0)
+                                    {
+                                        p=-1;
+                                    }
+                                    if(i==1)
+                                    {
+                                        u=-1;
+                                    }
+                                    if(i==2)
+                                    {
+                                        o=-1;
+                                    }
+                                }
+                                else {
+                                    btn_array[i].setBackgroundResource(image1[i]);
+                                }
+
+                            }
+                            if(object1[5].equals("1"))
+                            {
+                                y=-1;
+                                btn_array[3].setBackgroundResource(image2[3]);
+                            }
+                            else {
+                                btn_array[3].setBackgroundResource(image1[3]);
+                            }
+
+                            if(object1[3].equals("null"))
+                            {
+                                label+="Error temp\n";
+                            }
+                            else
+                            {
+                                label+="Temperature: "+object1[3]+"°C\n";
+                            }
+                            if(object1[4].equals("null"))
+                            {
+                                label+="Error humidity";
+                            }
+                            else
+                            {
+                                label+="Humidity: "+object1[4]+"%";
+                            }
+                            txtResult.setText(label);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(getApplicationContext(),
+                                    "Error: " + e.getMessage(),
+                                    Toast.LENGTH_LONG).show();
                         }
-                        if(fan == hi){
-                            u = 1;
-                            btn3.setBackground(getResources().getDrawable(R.drawable.fan2));
-                        }
-                        if(curtain == hi){
-                            o = 1;
-                            btn4.setBackground(getResources().getDrawable(R.drawable.curtain2));
-                        }
-                        txtResult.setText(jsonResponse);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        Toast.makeText(getApplicationContext(),
-                                "Error: " + e.getMessage(),
-                                Toast.LENGTH_LONG).show();
                     }
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    // VolleyLog.d(TAG, "Error: " + error.getMessage());
-                    Toast.makeText(getApplicationContext(),
-                            error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // VolleyLog.d(TAG, "Error: " + error.getMessage());
+                        Toast.makeText(getApplicationContext(),
+                                error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
+
+
+
+
+
+
+
 // Add the request to the RequestQueue.
             String clientId = MqttClient.generateClientId();
             client = new MqttAndroidClient(this.getApplicationContext(), HOST, clientId);
@@ -184,16 +229,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void messageArrived(String s, MqttMessage message) throws Exception {
                     Rt.play();
-                    Intent intent = new Intent();
-                    PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this,0,intent,0);
-                    Notification noti = new Notification.Builder(MainActivity.this)
-                            .setTicker("TickerTitle")
-                            .setContentTitle("SmartHome")
-                            .setContentText("Changes have been made")
-                            .setSmallIcon(R.drawable.lock1)
-                            .setContentIntent(pendingIntent).getNotification();
-                    showNotification();
-
+                    showNotification(s,message);
 
                 }
 
@@ -204,14 +240,17 @@ public class MainActivity extends AppCompatActivity {
             });
 
 
-            mQueue.add(strReq);
-            btn1.setOnClickListener(new View.OnClickListener() {
+
+            btn_array[3].setOnClickListener(new View.OnClickListener() {
+
+
 
                 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
                 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
                 @Override
                 public void onClick(View v) {
-                    final String topic = "esp";
+                    btn_array[3].setEnabled(false);
+                    final String topic = "mqtt/door";
                     int qos = 1;
                     try {
                         IMqttToken subToken = client.subscribe(topic, qos);
@@ -230,104 +269,116 @@ public class MainActivity extends AppCompatActivity {
                     } catch (MqttException e) {
                         e.printStackTrace();
                     }
-                    Handler myHandler = new Handler();
-                    myHandler.postDelayed(mMyRunnable, 1000);
                     y++;
-                    pub ();
                     if ( y == 1 ) {
-                        Button btn1 = (Button) findViewById(R.id.btn1);
-                        btn1.setBackground(getResources().getDrawable(R.drawable.unlock1));
+                        message1 = "1";
+                        btn_array[3].setBackground(getResources().getDrawable(R.drawable.unlock1));
                         y = y - 2;
                     }
                     if ( y == 0 ){
-                        Button btn1 = (Button) findViewById(R.id.btn1);
-                        btn1.setBackground(getResources().getDrawable(R.drawable.lock1));
-                        pub ();
+                        message1 = "0";
+                        btn_array[3].setBackground(getResources().getDrawable(R.drawable.lock1));
                     }
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable(){
+                        @Override
+                        public void run(){
+                            btn_array[3].setEnabled(true);
+                        }
+                    }, 5000);
+
+                    pub ();
+
                 }
             });
-            btn2.setOnClickListener(new View.OnClickListener() {
+        btn_array[0].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    i++;
-                    pub2 ();
+                    btn_array[2].setEnabled(false);
+                    p++;
                     Handler myHandler = new Handler();
                     myHandler.postDelayed(mMyRunnable, 1000);
-                    if ( i == 1 ) {
-                        Button btn2 = (Button) findViewById(R.id.btn2);
-                        btn2.setBackground(getResources().getDrawable(R.drawable.elec));
-                        i = i - 2;
+                    if ( p == 1 ) {
+                        message1 = "0";
+                        btn_array[0].setBackground(getResources().getDrawable(R.drawable.elec2));
+                        p = p - 2;
                     }
-                    if ( i == 0 ){
-                        Button btn2 = (Button) findViewById(R.id.btn2);
-                        btn2.setBackground(getResources().getDrawable(R.drawable.elec2));
+                    if ( p == 0 ){
+                        message1 = "1";
+                        btn_array[0].setBackground(getResources().getDrawable(R.drawable.elec));
                     }
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable(){
+                        @Override
+                        public void run(){
+                            btn_array[0].setEnabled(true);
+                        }
+                    }, 5000);
+                    pub2 ();
                 }
             });
-            btn3.setOnClickListener(new View.OnClickListener(){
+        btn_array[1].setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
+                    btn_array[2].setEnabled(false);
                     u++;
-                    pub3 ();
                     Handler myHandler = new Handler();
                     myHandler.postDelayed(mMyRunnable, 1000);
                     if ( u == 1 ) {
-                        Button btn3 = (Button) findViewById(R.id.btn3);
-                        btn3.setBackground(getResources().getDrawable(R.drawable.fan2));
+                        message1 = "1";
+                        btn_array[1].setBackground(getResources().getDrawable(R.drawable.fan2));
                         u = u - 2;
                     }
                     if ( u == 0 ){
-                        Button btn3 = (Button) findViewById(R.id.btn3);
-                        btn3.setBackground(getResources().getDrawable(R.drawable.fan));
+                        message1 = "0";
+                        btn_array[1].setBackground(getResources().getDrawable(R.drawable.fan));
                     }
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable(){
+                        @Override
+                        public void run(){
+                            btn_array[1].setEnabled(true);
+                        }
+                    }, 5000);
+                    pub3 ();
                 }
             });
-            btn4.setOnClickListener(new View.OnClickListener(){
+        btn_array[2].setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
+                    btn_array[2].setEnabled(false);
                     o++;
-                    pub4 ();
                     Handler myHandler = new Handler();
                     myHandler.postDelayed(mMyRunnable, 1000);
                     if ( o == 1 ) {
-                        Button btn4 = (Button) findViewById(R.id.btn4);
-                        btn4.setBackground(getResources().getDrawable(R.drawable.curtain2));
+                        message1 = "0";
+                        btn_array[2].setBackground(getResources().getDrawable(R.drawable.curtain2));
                         o = o - 2;
                     }
                     if ( o == 0 ){
-                        Button btn4 = (Button) findViewById(R.id.btn4);
-                        btn4.setBackground(getResources().getDrawable(R.drawable.curtain));
+                        message1 = "1";
+                        btn_array[2].setBackground(getResources().getDrawable(R.drawable.curtain));
                     }
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable(){
+                        @Override
+                        public void run(){
+                            btn_array[2].setEnabled(true);
+                        }
+                    }, 5000);
+                    pub4 ();
                 }
             });
-
+        mQueue.add(strReq);
 
         }
-        else
-        {
-            Intent intent = new Intent(this, login.class);
-            startActivity(intent);
-        }
-
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if(user == null)
-        {
-            finish();
-            System.exit(0);
-        }
-    }
 
     public void pub ()
     {
-        String topic = "esp";
+        String topic = "mqtt/door";
 
         try {
-            client.publish(topic, message.getBytes(),0,false);
+            client.publish(topic, message1.getBytes(),0,false);
         } catch (MqttException e) {
             e.printStackTrace();
         }
@@ -336,10 +387,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void pub2 ()
     {
-        String topic = "light";
+        String topic = "mqtt/light";
 
         try {
-            client.publish(topic, message.getBytes(),0,false);
+            client.publish(topic, message1.getBytes(),0,false);
         } catch (MqttException e) {
             e.printStackTrace();
         }
@@ -348,23 +399,23 @@ public class MainActivity extends AppCompatActivity {
 
     public void pub3 ()
     {
-        String topic = "esp";
+        String topic = "mqtt/fan";
 
         try {
-            client.publish(topic, message.getBytes(),0,false);
+            client.publish(topic, message1.getBytes(),0,false);
         } catch (MqttException e) {
             e.printStackTrace();
         }
 
     }
     private void setSubscription(){
+
         try{
-            client.subscribe("esp", 0);
-            client.subscribe("light", 0);
-            client.subscribe("fan", 0);
-            client.subscribe("curtain", 0);
-            client.subscribe("esp1", 0);
-            client.subscribe("lock", 0);
+            client.subscribe("mqtt/light", 0);
+            client.subscribe("mqtt/fan", 0);
+            client.subscribe("mqtt/curtain", 0);
+            client.subscribe("mqtt/door", 0);
+            client.subscribe("mqtt/door/crack", 0);
         } catch (MqttException e) {
             e.printStackTrace();
             Toast.makeText(MainActivity.this,"Failed",Toast.LENGTH_SHORT).show();
@@ -372,17 +423,17 @@ public class MainActivity extends AppCompatActivity {
     }
     public void pub4 ()
     {
-        String topic = "curtain";
+        String topic = "mqtt/curtain";
 
         try {
-            client.publish(topic, message.getBytes(),0,false);
+            client.publish(topic, message1.getBytes(),0,false);
         } catch (MqttException e) {
             e.printStackTrace();
         }
 
     }
 
-    public void showNotification() {
+    public void showNotification(String s, MqttMessage message) {
         Log.d(TAG, "showNotification: ");
 
         Intent intent =new Intent(getApplicationContext(),MainActivity.class);
@@ -393,8 +444,8 @@ public class MainActivity extends AppCompatActivity {
 
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         Notification.Builder builder = new Notification.Builder(this)
-                .setContentTitle("Test Title")
-                .setContentText("This is a test of text")
+                .setContentTitle("Smart Home")
+                .setContentText(s)
                 .setSmallIcon(R.drawable.notify_big_icon)
                 .setContentIntent(pendingIntent);
         NotificationChannel channel;
