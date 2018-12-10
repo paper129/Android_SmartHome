@@ -294,17 +294,17 @@ public class MainActivity extends AppCompatActivity {
         btn_array[0].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    btn_array[2].setEnabled(false);
+                    btn_array[0].setEnabled(false);
                     p++;
                     Handler myHandler = new Handler();
                     myHandler.postDelayed(mMyRunnable, 1000);
                     if ( p == 1 ) {
-                        message1 = "0";
+                        message1 = "1";
                         btn_array[0].setBackground(getResources().getDrawable(R.drawable.elec2));
                         p = p - 2;
                     }
                     if ( p == 0 ){
-                        message1 = "1";
+                        message1 = "0";
                         btn_array[0].setBackground(getResources().getDrawable(R.drawable.elec));
                     }
                     Handler handler = new Handler();
@@ -320,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
         btn_array[1].setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    btn_array[2].setEnabled(false);
+                    btn_array[1].setEnabled(false);
                     u++;
                     Handler myHandler = new Handler();
                     myHandler.postDelayed(mMyRunnable, 1000);
@@ -351,12 +351,12 @@ public class MainActivity extends AppCompatActivity {
                     Handler myHandler = new Handler();
                     myHandler.postDelayed(mMyRunnable, 1000);
                     if ( o == 1 ) {
-                        message1 = "0";
+                        message1 = "1";
                         btn_array[2].setBackground(getResources().getDrawable(R.drawable.curtain2));
                         o = o - 2;
                     }
                     if ( o == 0 ){
-                        message1 = "1";
+                        message1 = "0";
                         btn_array[2].setBackground(getResources().getDrawable(R.drawable.curtain));
                     }
                     Handler handler = new Handler();
@@ -441,11 +441,63 @@ public class MainActivity extends AppCompatActivity {
                 NOTYFI_REQUEST_ID,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
+        Log.d("System Info","...."+message+"....");
+        if(s.equals("mqtt/light"))
+        {
+            if(message.toString().equals("1"))
+            {
+                s = "light is off";
+            }
+            else
+            {
+                s = "light is on";
+            }
+        }
+        if(s.equals("mqtt/fan"))
+        {
+            if(message.toString().equals("1"))
+            {
+                s = "fan is off";
+            }
+            else
+            {
+                s = "fan is on";
+            }
+        }
+        if(s.equals("mqtt/curtain"))
+        {
+            if(message.toString().equals("1"))
+            {
+                s = "curtain is off";
+            }
+            else
+            {
+                s = "curtain is on";
+            }
+        }
+        if(s.equals("mqtt/door"))
+        {
+            if(message.toString().equals("1"))
+            {
+                s = "door is off";
+            }
+            else
+            {
+                s = "door is on";
+            }
+        }
+        if(s.equals("mqtt/door/crack"))
+        {
+            if(message.toString().equals("1"))
+            {
+                s = "Your door is cracked";
+            }
 
+        }
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         Notification.Builder builder = new Notification.Builder(this)
                 .setContentTitle("Smart Home")
-                .setContentText(s)
+                .setContentText(s )
                 .setSmallIcon(R.drawable.notify_big_icon)
                 .setContentIntent(pendingIntent);
         NotificationChannel channel;
