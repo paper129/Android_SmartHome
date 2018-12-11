@@ -264,6 +264,8 @@ public class MainActivity extends AppCompatActivity {
                             public void onFailure(IMqttToken asyncActionToken,
                                                   Throwable exception) {
                                 Log.e(TAG, "Subscribe Failed " + topic);
+                                String toast = "Subscribe " + topic + " Failed " ;
+                                Toast.makeText(getApplicationContext(), toast, Toast.LENGTH_LONG).show();
                             }
                         });
                     } catch (MqttException e) {
@@ -274,10 +276,12 @@ public class MainActivity extends AppCompatActivity {
                         message1 = "1";
                         btn_array[3].setBackground(getResources().getDrawable(R.drawable.unlock1));
                         y = y - 2;
+                        String toast = "Unlocked!" ;
+                        Toast.makeText(getApplicationContext(), toast, Toast.LENGTH_LONG).show();
                     }
                     if ( y == 0 ){
-                        message1 = "0";
-                        btn_array[3].setBackground(getResources().getDrawable(R.drawable.lock1));
+                        message1 = "1";
+                        btn_array[3].setBackground(getResources().getDrawable(R.drawable.unlock1));
                     }
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable(){
@@ -436,7 +440,7 @@ public class MainActivity extends AppCompatActivity {
     public void showNotification(String s, MqttMessage message) {
         Log.d(TAG, "showNotification: ");
 
-        Intent intent =new Intent(getApplicationContext(),MainActivity.class);
+        Intent intent = new Intent(getApplicationContext(),MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
                 NOTYFI_REQUEST_ID,
                 intent,
@@ -446,44 +450,40 @@ public class MainActivity extends AppCompatActivity {
         {
             if(message.toString().equals("1"))
             {
-                s = "light is off";
+                s = "Light is On";
             }
             else
             {
-                s = "light is on";
+                s = "Light is Off";
             }
         }
         if(s.equals("mqtt/fan"))
         {
             if(message.toString().equals("1"))
             {
-                s = "fan is off";
+                s = "Fan is On";
             }
             else
             {
-                s = "fan is on";
+                s = "Fan is Off";
             }
         }
         if(s.equals("mqtt/curtain"))
         {
             if(message.toString().equals("1"))
             {
-                s = "curtain is off";
+                s = "Curtain is On";
             }
             else
             {
-                s = "curtain is on";
+                s = "Curtain is Off";
             }
         }
         if(s.equals("mqtt/door"))
         {
             if(message.toString().equals("1"))
             {
-                s = "door is off";
-            }
-            else
-            {
-                s = "door is on";
+                s = "Door Opened";
             }
         }
         if(s.equals("mqtt/door/crack"))
@@ -494,6 +494,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
+
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         Notification.Builder builder = new Notification.Builder(this)
                 .setContentTitle("Smart Home")
